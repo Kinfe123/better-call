@@ -28,6 +28,9 @@ function safeStringify(obj: any, replacer?: (key: string, value: any) => any, sp
 	const seen = new WeakSet();
 	
 	const safeReplacer = (key: string, value: any) => {
+		if (typeof value === "bigint") {
+      			return value.toString();
+		}
 		if (typeof value === 'object' && value !== null) {
 			if (seen.has(value)) {
 				return '[Circular Reference]';
