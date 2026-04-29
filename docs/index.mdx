@@ -1,0 +1,38 @@
+---
+title: "Better Call"
+description: "Overview for Better Call."
+order: 0
+---
+
+# Better Call
+
+Better call is a tiny web framework for creating endpoints that can be invoked as a normal function or mounted to a router to be served by any web standard compatible server (like Bun, node, nextjs, sveltekit...) and also includes a typed RPC client for typesafe client side invocation of these endpoints.
+## Product Story
+Better call is a tiny web framework for creating endpoints that can be invoked as a normal function or mounted to a router to be served by any web standard compatible server (like Bun, node, nextjs, sveltekit... ) and also includes a typed RPC client for typesafe client side invocation of these endpoints.
+## Reader Paths
+- Start with the overview, quickstart, and installation pages to understand the product before moving into deeper setup details.
+- Use API reference pages after the mental model is clear and you need routes, commands, adapters, exports, or type contracts.
+## How These Docs Help
+Each page starts with the reader's goal, then moves into the workflow, configuration, and verification details needed to use or operate the project. File paths and exports are supporting context, not the main explanation.
+## Documentation Map
+- Get Started: [Better Call](/docs) - Overview for Better Call.
+- Get Started: [Quickstart](/docs/quickstart) - Run Better Call for the first time.
+- Get Started: [Installation](/docs/installation) - Install and configure Better Call.
+- API Reference: [API Reference](/docs/api) - Concrete developer-facing surfaces: commands, exports, adapters, routes, and type contracts.
+- API Reference: [Public Exports](/docs/api/exports) - Reference for choosing the correct public import path for the workflow you are building.
+- Architecture: [Architecture](/docs/architecture) - How major subsystems, runtime surfaces, and workflow boundaries fit together.
+- Backend: [Backend](/docs/backend) - Server-side systems, request handling, runtime behavior, and data-facing workflows.
+- Architecture: [Architecture Overview](/docs/architecture/overview) - The architecture page explains the repository as a set of real subsystems so readers can orient themselves before diving into commands, exports, or implementation files.
+- Backend: [Core Backend Systems](/docs/backend/systems) - The backend page explains request handling, runtime configuration, data-facing services, and the server-side workflow behind the product.
+## At A Glance
+- Package name: `better-call`
+- Runtime and adapter coverage: Express
+## Runtime and Adapter Coverage
+- Express
+## Common Commands
+- `test` runs `vitest` and runs verification for expected behavior.
+- `typecheck` runs `tsc --noEmit` and supports the project workflow.
+- `build` runs `tsup --dts --clean` and creates the production build or compiled package artifacts.
+- `dev` runs `tsup --watch` and starts the local development workflow.
+## Configuration You May Need
+No reader-facing environment contract was found in README or example environment files.

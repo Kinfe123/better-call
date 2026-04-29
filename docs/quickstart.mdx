@@ -1,0 +1,36 @@
+---
+title: "Quickstart"
+description: "Run Better Call with the current scripts and configuration."
+order: 10
+---
+
+# Quickstart
+
+This is the shortest path from clone to a useful first run of Better Call. The goal is not to understand every file yet; the goal is to install dependencies and run the command or package entrypoint that proves the project is alive.
+## What You Will Accomplish
+- Prepare the project with the detected package manager.
+- Review the package scripts or library entrypoint before the first run.
+- Run the primary workflow so you can confirm the project is usable before exploring advanced docs.
+## Before You Start
+This project uses `pnpm` as its package manager.
+No README or example environment file defines required variables, so do not treat source-only environment reads as the first-run checklist.
+## Recommended First Run
+1. Install dependencies with `pnpm install`.
+2. Run `pnpm dev` to exercise the main workflow.
+## Useful Commands
+These commands are useful after the first run because they are the repeatable workflows available in the project.
+- `test` runs `vitest` and runs verification for expected behavior.
+- `typecheck` runs `tsc --noEmit` and supports the project workflow.
+- `build` runs `tsup --dts --clean` and creates the production build or compiled package artifacts.
+- `dev` runs `tsup --watch` and starts the local development workflow.
+## Useful CLI Options
+No CLI options were found in the current source entrypoints.
+## Next Places to Read
+- Better Call: `docs/page.mdx`
+- Installation: `docs/installation/page.mdx`
+- API Reference: `docs/api/page.mdx`
+- Public Exports: `docs/api/exports/page.mdx`
+- Architecture: `docs/architecture/page.mdx`
+- Backend: `docs/backend/page.mdx`
+- Architecture Overview: `docs/architecture/overview/page.mdx`
+- Core Backend Systems: `docs/backend/systems/page.mdx`
