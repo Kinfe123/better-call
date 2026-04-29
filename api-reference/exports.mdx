@@ -1,0 +1,36 @@
+---
+title: "Public Exports"
+description: "Reference for choosing the correct public import path for the workflow you are building."
+order: 40
+---
+
+# Public Exports
+
+Reference for choosing the correct public import path for the workflow you are building.
+## What To Import
+Better Call exposes a few public entrypoints from `better-call`. Start with the main package for shared helpers, use framework subpaths when mounting the runtime in an app, and use config subpaths when typing or loading runtime configuration.
+## Common Imports
+```ts
+import { createEndpoint, createInternalContext } from "better-call";
+```
+## Choose an Import Path
+| Import path | When to use it | Common imports |
+| --- | --- | --- |
+| `better-call` | Choose this for top-level helpers, shared types, and runtime utilities from Better Call. | `_statusCode`, `APIError`, `CookieOptions`, `CookiePrefixOptions`, `createEndpoint` |
+| `better-call/client` | Choose this for the focused subpath rather than the main package entrypoint. | `ClientOptions`, `createClient`, `RequiredOptionKeys` |
+| `better-call/node` | Choose this for the focused subpath rather than the main package entrypoint. | `getRequest`, `setResponse`, `toNodeHandler` |
+## How To Decide
+- Choose the main package entrypoint for shared helpers, product-level types, and top-level setup utilities.
+- Choose a framework entrypoint when the import is used inside that framework's route, handler, plugin, or server integration.
+- Choose a configuration entrypoint when the code is reading, validating, or typing the product configuration.
+- If two paths look similar, prefer the narrowest path that matches the file you are editing.
+## From The README
+The README already describes this area in project language. These excerpts are the reader-facing baseline before adding more examples.
+
+### Router Options
+- If it returns a Response object, the router will use it as the HTTP response.
+- If it throws a new error, the router will handle it based on its type (if it's an APIError, it will be converted to a response; otherwise, it will be re thrown).
+- If it returns nothing (void), the router will proceed with default error handling (checking throwError setting).
+- This error handler can be set as async function or not.
+- For APIError instances, it will convert them to appropriate HTTP responses.
+- For other errors, it will return a 500 Internal Server Error response.

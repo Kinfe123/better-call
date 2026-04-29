@@ -1,0 +1,32 @@
+---
+title: "Installation"
+description: "Install and configure Better Call."
+order: 20
+---
+
+# Installation
+
+This page explains how to get Better Call into a runnable state. It separates the setup model from command lists so readers understand what each step is preparing.
+## Setup Model
+Installation has two jobs: install the package dependencies and verify the command or package entrypoint that exercises the main workflow.
+## What Gets Configured
+- Dependencies provide the framework, CLI, adapters, and runtime libraries used by the project.
+- Library options are usually supplied by the host application when it imports and initializes the package.
+- Scripts provide repeatable entrypoints for local development, production builds, tests, and release tasks.
+## Successful Setup Looks Like
+- Dependencies install with the package manager already used by the project.
+- The primary command starts, builds, or verifies the project without needing undocumented manual steps.
+## Install Dependencies
+Run `pnpm install` from the project root.
+## Review Runtime Configuration
+Review the package options and runtime clients that callers pass in from their application.
+No reader-facing environment contract was found in README or example environment files.
+## Verify the Build or Runtime Command
+The most relevant command detected right now is `pnpm dev`.
+## Framework and Adapter Coverage
+- Express
+## Useful Commands
+- `test` runs `vitest` and runs verification for expected behavior.
+- `typecheck` runs `tsc --noEmit` and supports the project workflow.
+- `build` runs `tsup --dts --clean` and creates the production build or compiled package artifacts.
+- `dev` runs `tsup --watch` and starts the local development workflow.
