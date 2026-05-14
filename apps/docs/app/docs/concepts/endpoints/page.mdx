@@ -1,0 +1,118 @@
+---
+title: "Endpoints"
+description: "Endpoints are building blocks of better-call."
+order: 50
+---
+
+# Endpoints
+
+Endpoints are building blocks of better-call.
+
+## Path
+
+The path is the URL path that the endpoint will respond to. It can be a direct path or a path with parameters and wildcards.
+
+```ts
+//direct path
+const endpoint = createEndpoint("/item", {
+    method: "GET",
+}, async (ctx) => {})
+
+//path with parameters
+const endpoint = createEndpoint("/item/:id", {
+    method: "GET",
+}, async (ctx) => {
+    return {
+        item: {
+            id: ctx.params.id
+        }
+    }
+})
+
+//path with wildcards
+const endpoint = createEndpoint("/item/**:name", {
+    method: "GET",
+}, async (ctx) => {
+    //the name will be the remaining path
+    ctx.params.name
+})
+```
+
+## Body Schema
+
+The `body` option accepts a standard schema and will validate the request body. If the request body doesn't match the schema, the endpoint will throw an error. If it's mounted to a router, it'll return a 400 error.
+
+```ts
+const createItem = createEndpoint("/item", {
+    method: "POST",
+    body: z.object({
+        id: z.string()
+    })
+}, async (ctx) => {
+    return {
+        item: {
+            id: ctx.body.id
+        }
+    }
+})
+```
+
+## Query Schema
+
+The `query` option accepts a standard schema and will validate the request query. If the request query doesn't match the schema, the endpoint will throw an error. If it's mounted to a router, it'll return a 400 error.
+
+```ts
+const createItem = createEndpoint("/item", {
+    method: "GET",
+    query: z.object({
+        id: z.string()
+    })
+}, async (ctx) => {
+    return {
+        item: {
+            id: ctx.query.id
+        }
+    }
+})
+```
+
+## Require Headers
+
+The `requireHeaders` option is used to require the request to have headers. If the request doesn't have headers, the endpoint will throw an error. This is only useful when you call the endpoint as a function.
+
+```ts
+const createItem = createEndpoint("/item", {
+    method: "GET",
+    requireHeaders: true
+}, async (ctx) => {
+    return {
+        item: {
+            id: ctx.headers.get("id")
+        }
+    }
+})
+createItem({
+    headers: new Headers()
+})
+```
+
+## Require Request
+
+The `requireRequest` option is used to require the request to have a request object. If the request doesn't have a request object, the endpoint will throw an error. This is only useful when you call the endpoint as a function.
+
+```ts
+const createItem = createEndpoint("/item", {
+    method: "GET",
+    requireRequest: true
+}, async (ctx) => {
+    return {
+        item: {
+            id: ctx.request.id
+        }
+    }
+})
+
+createItem({
+    request: new Request()
+})
+```

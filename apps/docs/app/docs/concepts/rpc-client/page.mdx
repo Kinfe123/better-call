@@ -1,0 +1,29 @@
+---
+title: "RPC Client"
+description: "better-call comes with a rpc client that can be used to call endpoints from the client."
+order: 110
+---
+
+# RPC Client
+
+better-call comes with a rpc client that can be used to call endpoints from the client. The client wraps over better-fetch so you can pass any options that are supported by better-fetch.
+
+```ts
+import { createClient } from "better-call/client";
+import { router } from "@serve/router";
+
+const client = createClient<typeof router>({
+    /**
+     * if you add custom path like `http://
+     * localhost:3000/api` make sure to add the
+     * custom path on the router config as well.
+    */
+    baseURL: "http://localhost:3000"
+});
+const items = await client("/item", {
+    body: {
+        id: "123"
+    }
+});
+```
+> You can also pass object that contains endpoints as a generic type to create client.

@@ -1,0 +1,51 @@
+---
+title: "Error Handling"
+description: "To return a non 200 response, you will need to throw Better Call's APIError error."
+order: 60
+---
+
+# Error Handling
+
+To return a non 200 response, you will need to throw Better Call's `APIError` error. If the endpoint is called as a function, the error will be thrown but if it's mounted to a router, the error will be converted to a response object with the correct status code and headers.
+
+```ts
+const createItem = createEndpoint("/item", {
+    method: "POST",
+    body: z.object({
+        id: z.string()
+    })
+}, async (ctx) => {
+    if(ctx.body.id === "123") {
+        throw ctx.error("Bad Request", {
+            message: "Id is not allowed"
+        })
+    }
+    return {
+        item: {
+            id: ctx.body.id
+        }
+    }
+})
+```
+
+You can also instead throw using a status code:
+
+```ts
+const createItem = createEndpoint("/item", {
+    method: "POST",
+    body: z.object({
+        id: z.string()
+    })
+}, async (ctx) => {
+    if(ctx.body.id === "123") {
+        throw ctx.error(400, {
+            message: "Id is not allowed"
+        })
+    }
+    return {
+        item: {
+            id: ctx.body.id
+        }
+    }
+})
+```

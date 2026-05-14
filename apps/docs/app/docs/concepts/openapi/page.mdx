@@ -1,0 +1,89 @@
+---
+title: "OpenAPI"
+description: "Better Call by default generate open api schema for the endpoints and exposes it on /api/reference path using scalar."
+order: 90
+---
+
+# OpenAPI
+
+Better Call by default generate open api schema for the endpoints and exposes it on `/api/reference` path using scalar. By default, if you're using `zod` it'll be able to generate `body` and `query` schema.
+
+```ts
+import { createEndpoint, createRouter } from "better-call"
+
+const createItem = createEndpoint("/item/:id", {
+    method: "GET",
+    query: z.object({
+        id: z.string({
+            description: "The id of the item"
+        })
+    })
+}, async (ctx) => {
+    return {
+        item: {
+            id: ctx.query.id
+        }
+    }
+})
+```
+
+But you can also define custom schema for the open api schema.
+
+```ts
+import { createEndpoint, createRouter } from "better-call"
+
+const createItem = createEndpoint("/item/:id", {
+    method: "GET",
+    query: z.object({
+        id: z.string({
+            description: "The id of the item"
+        })
+    }),
+    metadata: {
+    openapi: {
+        requestBody: {
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            id: {
+                                type: "string",
+                                description: "The id of the item"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+   }
+}, async (ctx) => {
+    return {
+        item: {
+            id: ctx.query.id
+        }
+    }
+})
+```
+
+## Configuration
+
+You can configure the open api schema by passing the `openapi` option to the router.
+
+```ts
+const router = createRouter({
+    createItem
+}, {
+    openapi: {
+        disabled: false, //default false
+        path: "/api/reference", //default /api/reference
+        scalar: {
+            title: "My API",
+            version: "1.0.0",
+            description: "My API Description",
+            theme: "dark" //default saturn
+        }
+    }
+})
+```

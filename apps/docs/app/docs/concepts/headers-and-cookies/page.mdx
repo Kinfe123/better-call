@@ -1,0 +1,46 @@
+---
+title: "Headers and Cookies"
+description: "If you return a response object from an endpoint, the headers and cookies will be set on the response object. But You can set headers and cookies for the context object."
+order: 70
+---
+
+# Headers and Cookies
+
+If you return a response object from an endpoint, the headers and cookies will be set on the response object. But You can  set headers and cookies for the context object.
+
+```ts
+const createItem = createEndpoint("/item", {
+    method: "POST",
+    body: z.object({
+        id: z.string()
+    })
+}, async (ctx) => {
+    ctx.setHeader("X-Custom-Header", "Hello World")
+    ctx.setCookie("my-cookie", "hello world")
+    return {
+        item: {
+            id: ctx.body.id
+        }
+    }
+})
+```
+
+You can also get cookies from the context object.
+
+```ts
+const createItem = createEndpoint("/item", {
+    method: "POST",
+    body: z.object({
+        id: z.string()
+    })
+}, async (ctx) => {
+    const cookie = ctx.getCookie("my-cookie")
+    return {
+        item: {
+            id: ctx.body.id
+        }
+    }
+})
+```
+
+> other than normal cookies the ctx object also exposes signed cookies.

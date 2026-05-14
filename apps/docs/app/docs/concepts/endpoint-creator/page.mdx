@@ -1,0 +1,33 @@
+---
+title: "Endpoint Creator"
+description: "You can create an endpoint creator by calling createEndpoint.create that will let you apply set of middlewares to all the endpoints created by the creator."
+order: 40
+---
+
+# Endpoint Creator
+
+You can create an endpoint creator by calling `createEndpoint.create` that will let you apply set of middlewares to all the endpoints created by the creator.
+
+```ts
+const dbMiddleware = createMiddleware(async (ctx) => {
+   return {
+    db: new Database()
+   }
+})
+const create = createEndpoint.create({
+    use: [dbMiddleware]
+})
+
+const createItem = create("/item", {
+    method: "POST",
+    body: z.object({
+        id: z.string()
+    })
+}, async (ctx) => {
+    await ctx.context.db.save(ctx.body)
+})
+```
+## Where To Continue
+- [Better Call](/docs) - Overview for Better Call.
+- [Quickstart](/docs/quickstart) - Run Better Call for the first time.
+- [Installation](/docs/installation) - Install and configure Better Call.

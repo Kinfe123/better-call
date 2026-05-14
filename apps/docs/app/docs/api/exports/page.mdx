@@ -1,0 +1,26 @@
+---
+title: "Public Exports"
+description: "Reference for choosing the correct public import path for the workflow you are building."
+order: 130
+---
+
+# Public Exports
+
+Reference for choosing the correct public import path for the workflow you are building.
+## What To Import
+Better Call exposes a small set of public import paths from `better-call`. Start with the root package for the main endpoint, router, or middleware helpers, then move to a subpath when you need a typed client or a runtime adapter.
+## Example Imports
+```ts
+import { createEndpoint, createRouter } from "better-call";
+```
+## Choose an Import Path
+| Import path | When to use it | Common imports |
+| --- | --- | --- |
+| `better-call` | Choose this for top-level helpers, shared types, and runtime utilities from Better Call. | `_statusCode`, `APIError`, `CookieOptions`, `CookiePrefixOptions`, `createEndpoint` |
+| `better-call/client` | Choose this for the focused subpath rather than the main package entrypoint. | `ClientOptions`, `createClient`, `RequiredOptionKeys` |
+| `better-call/node` | Choose this for the focused subpath rather than the main package entrypoint. | `getRequest`, `setResponse`, `toNodeHandler` |
+## How To Choose
+- Start with the root package when you are defining endpoints, middleware, or routers.
+- Choose a client subpath when your app is calling those endpoints from the browser or another service.
+- Choose an adapter subpath when you are mounting the router into a runtime such as Node.
+- Prefer the narrowest stable import path that matches the job you are doing.

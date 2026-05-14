@@ -1,0 +1,72 @@
+---
+title: "Quickstart"
+description: "Run Better Call with the current scripts and configuration."
+order: 10
+---
+
+# Quickstart
+
+This is the fastest way to see Better Call in action from a real code example.
+The building blocks for better-call are endpoints. You can create an endpoint by calling `createEndpoint` and passing it a path, options and a handler that will be invoked when the endpoint is called.
+
+```ts
+import { createEndpoint, createRouter } from "better-call"
+import { z } from "zod"
+
+const createItem = createEndpoint("/item", {
+    method: "POST",
+    body: z.object({
+        id: z.string()
+    })
+}, async (ctx) => {
+    return {
+        item: {
+            id: ctx.body.id
+        }
+    }
+})
+
+// Now you can call the endpoint just as a normal function.
+const item = await createItem({
+    body: {
+        id: "123"
+    }
+})
+```
+
+OR you can mount the endpoint to a router and serve it with any web standard compatible server.
+
+> The example below uses [Bun](https://bun.sh/)
+
+```ts
+const router = createRouter({
+    createItem
+})
+
+Bun.serve({
+    fetch: router.handler
+})
+```
+
+Then you can use the rpc client to call the endpoints on client.
+
+```ts
+//client.ts
+import type { router } from "./router" // import router type
+import { createClient } from "better-call/client";
+
+const client = createClient<typeof router>({
+    baseURL: "http://localhost:3000"
+});
+const items = await client("/item", {
+    body: {
+        id: "123"
+    }
+});
+```
+## Next Steps
+- [Concepts](/docs/concepts) - Core ideas and mental models that explain how the project works.
+- [Endpoint Creator](/docs/concepts/endpoint-creator) - You can create an endpoint creator by calling createEndpoint.create that will let you apply set of middlewares to all the endpoints...
+- [Endpoints](/docs/concepts/endpoints) - Endpoints are building blocks of better-call.
+- [Error Handling](/docs/concepts/error-handling) - To return a non 200 response, you will need to throw Better Call's APIError error.
+- [Headers and Cookies](/docs/concepts/headers-and-cookies) - If you return a response object from an endpoint, the headers and cookies will be set on the response object.
