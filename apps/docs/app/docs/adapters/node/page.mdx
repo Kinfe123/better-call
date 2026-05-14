@@ -1,0 +1,25 @@
+---
+title: "Node Adapter"
+description: "You can use the node adapter to serve the router with node http server."
+order: 150
+---
+
+# Node Adapter
+
+You can use the node adapter to serve the router with node http server.
+
+```ts
+import { createRouter } from "better-call";
+import { toNodeHandler } from "better-call/node";
+import { createItem } from "./item";
+import http from "http";
+
+const router = createRouter({
+    createItem
+})
+const server = http.createServer(toNodeHandler(router.handler))
+```
+## Where To Continue
+- [Better Call](/docs) - Overview for Better Call.
+- [Quickstart](/docs/quickstart) - Run Better Call for the first time.
+- [Installation](/docs/installation) - Install and configure Better Call.

@@ -1,0 +1,24 @@
+---
+title: "Concepts"
+description: "Core ideas and mental models that explain how the project works."
+order: 30
+---
+
+# Concepts
+
+Concept pages explain the mental model behind Better Call: the main primitives, how they fit together, and which page to open next when you want a deeper example or API surface.
+
+## When to Use This Section
+- Start with the page closest to the workflow you are trying to complete.
+- Use setup and configuration pages before running commands in a new environment.
+- Use reference pages when you already know the concept and need exact commands, imports, or options.
+
+## Available Pages
+- [Endpoint Creator](/docs/concepts/endpoint-creator) - You can create an endpoint creator by calling createEndpoint.create that will let you apply set of middlewares to all the endpoints...
+- [Endpoints](/docs/concepts/endpoints) - Endpoints are building blocks of better-call.
+- [Error Handling](/docs/concepts/error-handling) - To return a non 200 response, you will need to throw Better Call's APIError error.
+- [Headers and Cookies](/docs/concepts/headers-and-cookies) - If you return a response object from an endpoint, the headers and cookies will be set on the response object.
+- [Middleware](/docs/concepts/middleware) - Endpoints can use middleware by passing the use option to the endpoint.
+- [OpenAPI](/docs/concepts/openapi) - Better Call by default generate open api schema for the endpoints and exposes it on /api/reference path using scalar.
+- [Router](/docs/concepts/router) - You can create a router by calling createRouter and passing it an array of endpoints.
+- [RPC Client](/docs/concepts/rpc-client) - better-call comes with a rpc client that can be used to call endpoints from the client.

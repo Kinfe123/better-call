@@ -1,0 +1,29 @@
+---
+title: "Middleware"
+description: "Endpoints can use middleware by passing the use option to the endpoint. To create a middleware, you can call createMiddleware and pass it a function or an options object and a..."
+order: 80
+---
+
+# Middleware
+
+Endpoints can use middleware by passing the `use` option to the endpoint. To create a middleware, you can call `createMiddleware` and pass it a function or an options object and a handler function.
+
+If you return a context object from the middleware, it will be available in the endpoint context.
+
+```ts
+import { createMiddleware, createEndpoint } from "better-call";
+
+const middleware = createMiddleware(async (ctx) => {
+    return {
+        name: "hello"
+    }
+})
+
+const endpoint = createEndpoint("/", {
+    method: "GET",
+    use: [middleware],
+}, async (ctx) => {
+   //this will be the context object returned by the middleware with the name property
+   ctx.context
+})
+```

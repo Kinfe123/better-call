@@ -1,0 +1,24 @@
+---
+title: "Installation"
+description: "Install and configure Better Call."
+order: 20
+---
+
+# Installation
+
+Install Better Call in the host application first, then continue to the usage and concept pages for the first real integration.
+```bash
+pnpm i better-call
+```
+
+Make sure to install [standard schema](https://github.com/standard-schema/standard-schema) compatible validation library like zod.
+
+```bash
+pnpm i zod
+```
+## Next Steps
+- [Quickstart](/docs/quickstart) - Run Better Call for the first time.
+- [Concepts](/docs/concepts) - Core ideas and mental models that explain how the project works.
+- [Endpoint Creator](/docs/concepts/endpoint-creator) - You can create an endpoint creator by calling createEndpoint.create that will let you apply set of middlewares to all the endpoints...
+- [Endpoints](/docs/concepts/endpoints) - Endpoints are building blocks of better-call.
+- [Error Handling](/docs/concepts/error-handling) - To return a non 200 response, you will need to throw Better Call's APIError error.
