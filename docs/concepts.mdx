@@ -1,0 +1,27 @@
+---
+title: "Concepts"
+description: "Core ideas and mental models that explain how Better Call works."
+order: 0
+---
+
+# Concepts
+
+Better Call is built around a small set of composable primitives. Understanding how they fit together makes everything else predictable.
+
+An **endpoint** is the fundamental unit — a path, a set of options, and a handler. Endpoints can be called directly as functions or mounted on a router and served over HTTP. This dual-invocation model means your business logic doesn't have to change depending on the calling context.
+
+A **router** collects endpoints and exposes a single `handler` function you pass to any Fetch-compatible server. The router handles matching, error serialization, and optional middleware that applies across matching routes.
+
+**Middleware** lets you inject shared context — authentication data, database connections, tracing — into the handler's `ctx.context` object. Every endpoint that declares a middleware in its `use` array gets the middleware's return value merged into context.
+
+The **RPC client** mirrors the router's type on the browser side. Because both sides share the same TypeScript types, path autocompletion, request body shapes, and response types are inferred automatically.
+
+Read the individual pages to go deeper on each primitive:
+
+- [Endpoints](/docs/concepts/endpoints) — paths, body/query schemas, params, and wildcards.
+- [Middleware](/docs/concepts/middleware) — creating and composing middleware.
+- [Router](/docs/concepts/router) — serving endpoints, base paths, and error handling.
+- [RPC Client](/docs/concepts/rpc-client) — typed client-side invocation.
+- Error Handling — throwing `APIError` for non-200 responses.
+- [Headers and Cookies](/docs/concepts/headers-and-cookies) — reading and writing headers, cookies, and signed cookies.
+- [Endpoint Creator](/docs/concepts/endpoint-creator) — sharing middleware across groups of endpoints.

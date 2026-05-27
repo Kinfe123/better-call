@@ -1,0 +1,67 @@
+---
+title: "Headers and Cookies"
+description: "Read and write headers, cookies, and signed cookies from within your endpoint handlers."
+order: 6
+---
+
+# Headers and Cookies
+
+The handler context (`ctx`) exposes helper methods for reading and writing headers and cookies. These are applied to the outgoing response when the endpoint is served via a router.
+
+## Setting response headers
+
+Call `ctx.setHeader(name, value)` anywhere in your handler:
+
+```ts
+import { createEndpoint } from "better-call";
+import { z } from "zod";
+
+const createItem = createEndpoint(
+  "/item",
+  { method: "POST", body: z.object({ id: z.string() }) },
+  async (ctx) => {
+    ctx.setHeader("X-Custom-Header", "Hello World");
+    return { item: { id: ctx.body.id } };
+  }
+);
+```
+
+## Setting cookies
+
+Call `ctx.setCookie(name, value, options?)` to write a cookie onto the response. The `options` argument accepts standard cookie attributes like `httpOnly`, `secure`, `maxAge`, `path`, and `sameSite`.
+
+```ts
+const login = createEndpoint(
+  "/login",
+  { method: "POST" },
+  async (ctx) => {
+    ctx.setCookie("session", "tok_abc123", {
+      httpOnly: true,
+      secure: true,
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+    return { ok: true };
+  }
+);
+```
+
+## Reading cookies
+
+Call `ctx.getCookie(name)` to read a cookie from the incoming request:
+
+```ts
+const getProfile = createEndpoint(
+  "/profile",
+  { method: "GET" },
+  async (ctx) => {
+    const session = ctx.getCookie("session");
+    return { session };
+  }
+);
+```
+
+## Signed cookies
+
+The `ctx` object also exposes signed cookie helpers. Signed cookies include a cryptographic signature so you can verify they haven't been tampered with on the client. Use `ctx.setSignedCookie` to write and `ctx.getSignedCookie` to read and verify. The verification uses the Web Crypto API via the `getCryptoKey` utility exported from `better-call`.
+
+> **Note:** Signed cookies require a secret key. Make sure you manage your signing secret securely and keep it consistent across server restarts.

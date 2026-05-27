@@ -1,0 +1,46 @@
+---
+title: "OpenAPI"
+description: "Better Call auto-generates an OpenAPI schema for your endpoints and serves an interactive Scalar UI at /api/reference."
+order: 8
+---
+
+# OpenAPI
+
+If you are using zod for your `body` and `query` schemas, Better Call will derive the request shape from those schemas and include them in the generated spec.
+
+## Default behavior
+
+Mount your router and navigate to `/api/reference` in a browser. You will see the auto-generated Scalar UI listing every endpoint with its method, path, and schema.
+
+## Configuring OpenAPI
+
+Pass the `openapi` option to `createRouter` to customize or disable the generated spec:
+
+```ts
+import { createRouter } from "better-call";
+import { createItem } from "./items";
+
+const router = createRouter(
+  { createItem },
+  {
+    openapi: {
+      disabled: false,          // set true to turn off the /api/reference route
+      path: "/api/reference",   // change the path for the Scalar UI
+      scalar: {
+        title: "My API",
+        version: "1.0.0",
+        description: "My API Description",
+        theme: "dark",           // default is "saturn"
+      },
+    },
+  }
+);
+```
+
+All fields under `openapi` are optional — you only need to provide the ones you want to override.
+
+## Custom per-endpoint schema
+
+For endpoints where the auto-derived schema is insufficient, you can provide custom OpenAPI metadata directly in the endpoint options. The `OpenAPIParameter` and `OpenAPISchemaType` types exported from `better-call` describe the shapes you can use.
+
+> **Note:** The `disabled: false` default means the reference UI is always active in development. Set `disabled: true` before deploying if you don't want to expose the spec in production.

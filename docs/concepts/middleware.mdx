@@ -1,0 +1,88 @@
+---
+title: "Middleware"
+description: "Share context and run logic before your endpoint handler using createMiddleware and the use option."
+order: 2
+---
+
+# Middleware
+
+Middleware lets you run shared logic before an endpoint's handler and pass data into the handler's context. You create a middleware with `createMiddleware`, then reference it in an endpoint's `use` array.
+
+## Creating middleware
+
+```ts
+import { createMiddleware, createEndpoint } from "better-call";
+
+const authMiddleware = createMiddleware(async (ctx) => {
+  // Whatever you return is merged into ctx.context in the endpoint
+  return {
+    user: { id: "user_123", role: "admin" },
+  };
+});
+```
+
+## Using middleware in an endpoint
+
+Pass the middleware in the `use` array. The handler's `ctx.context` is typed as the intersection of all middleware return values.
+
+```ts
+const getProfile = createEndpoint(
+  "/profile",
+  {
+    method: "GET",
+    use: [authMiddleware],
+  },
+  async (ctx) => {
+    // ctx.context.user is fully typed
+    return { userId: ctx.context.user.id };
+  }
+);
+```
+
+## Composing multiple middleware
+
+You can add as many middleware as you need to the `use` array. They run in order, and each one's return value is merged into `ctx.context`.
+
+```ts
+const dbMiddleware = createMiddleware(async (ctx) => {
+  return { db: new Database() };
+});
+
+const tracingMiddleware = createMiddleware(async (ctx) => {
+  return { traceId: crypto.randomUUID() };
+});
+
+const createItem = createEndpoint(
+  "/item",
+  {
+    method: "POST",
+    use: [authMiddleware, dbMiddleware, tracingMiddleware],
+  },
+  async (ctx) => {
+    // ctx.context.user, ctx.context.db, and ctx.context.traceId are all available
+    await ctx.context.db.save({ id: "new" });
+    return { ok: true };
+  }
+);
+```
+
+## Router-level middleware
+
+The router also supports path-based middleware that applies to any request matching a route pattern. You pass these as the `routerMiddleware` option to `createRouter`.
+
+```ts
+import { createRouter } from "better-call";
+
+const apiGuard = createEndpoint("/api/**", { method: "GET" }, async (ctx) => {
+  return { authenticated: true };
+});
+
+const router = createRouter(
+  { createItem },
+  {
+    routerMiddleware: [{ path: "/api/**", middleware: apiGuard }],
+  }
+);
+```
+
+For applying the same middleware to a whole group of endpoints at definition time, see [Endpoint Creator](/docs/concepts/endpoint-creator).

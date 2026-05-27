@@ -1,0 +1,91 @@
+---
+title: "Endpoints"
+description: "Endpoints are the building blocks of Better Call — learn how to define paths, validate input, and handle requests."
+order: 1
+---
+
+# Endpoints
+
+An endpoint is a path, a set of options, and an async handler. You create one with `createEndpoint`, and you can call it as a plain function or serve it via a router — the same definition works both ways.
+
+## Paths
+
+The path can be a static string, a parameterized string, or a wildcard.
+
+```ts
+import { createEndpoint } from "better-call";
+
+// Static path
+const getItem = createEndpoint("/item", { method: "GET" }, async (ctx) => {
+  return { ok: true };
+});
+
+// Path parameter — available as ctx.params.id
+const getItemById = createEndpoint("/item/:id", { method: "GET" }, async (ctx) => {
+  return { id: ctx.params.id };
+});
+
+// Wildcard — the remaining path segments are in ctx.params.name
+const catchAll = createEndpoint("/files/**:name", { method: "GET" }, async (ctx) => {
+  return { path: ctx.params.name };
+});
+```
+
+## Body validation
+
+Pass a Standard Schema-compatible schema to the `body` option. Better Call validates the incoming body and makes the typed result available on `ctx.body`. If validation fails, calling the endpoint as a function throws an error; when served via a router, it returns a 400 response.
+
+```ts
+import { z } from "zod";
+
+const createItem = createEndpoint(
+  "/item",
+  {
+    method: "POST",
+    body: z.object({ id: z.string() }),
+  },
+  async (ctx) => {
+    return { item: { id: ctx.body.id } };
+  }
+);
+```
+
+## Query validation
+
+The `query` option works the same way. Validated query params are available on `ctx.query`.
+
+```ts
+const listItems = createEndpoint(
+  "/items",
+  {
+    method: "GET",
+    query: z.object({ page: z.string() }),
+  },
+  async (ctx) => {
+    return { page: ctx.query.page };
+  }
+);
+```
+
+## Requiring headers and request objects
+
+When you call an endpoint as a function, headers and the raw `Request` object are not automatically present. Use `requireHeaders: true` or `requireRequest: true` to enforce that callers pass them.
+
+```ts
+const secureEndpoint = createEndpoint(
+  "/secure",
+  { method: "GET", requireHeaders: true },
+  async (ctx) => {
+    const token = ctx.headers.get("Authorization");
+    return { token };
+  }
+);
+
+await secureEndpoint({ headers: new Headers({ Authorization: "Bearer xyz" }) });
+```
+
+## The handler context
+
+The handler receives a `ctx` object that contains `body`, `query`, `params`, `headers`, `request`, and helper methods like `ctx.error()`, `ctx.setHeader()`, `ctx.setCookie()`, and `ctx.getCookie()`. If middleware is attached via `use`, the middleware's return value is available on `ctx.context`.
+
+Next, read [Middleware](/docs/concepts/middleware) to learn how to share logic across endpoints, or Error Handling to see how to return non-200 responses.

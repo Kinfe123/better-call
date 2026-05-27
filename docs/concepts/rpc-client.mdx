@@ -1,0 +1,59 @@
+---
+title: "RPC Client"
+description: "Call your Better Call endpoints from the browser with full end-to-end type safety."
+order: 4
+---
+
+# RPC Client
+
+Better Call ships a typed RPC client in the `better-call/client` subpath. It wraps [better-fetch](https://github.com/better-auth/better-fetch) and gives you autocompletion on every path your router exposes, with typed request bodies and response shapes inferred from your endpoint definitions.
+
+## Setting up the client
+
+Import the type of your router (not the runtime value — this is a type-only import) and pass it as the generic argument to `createClient`.
+
+```ts
+// client.ts
+import { createClient } from "better-call/client";
+import type { router } from "./server"; // type-only import
+
+export const client = createClient<typeof router>({
+  baseURL: "http://localhost:3000",
+});
+```
+
+## Making requests
+
+Call `client` with a path and an options object. TypeScript will error if the path doesn't exist or if the body shape is wrong.
+
+```ts
+const result = await client("/item", {
+  body: { id: "123" },
+});
+
+console.log(result.item.id); // "123" — fully typed
+```
+
+## Using an endpoint object instead of a router
+
+You can also pass an object containing endpoint definitions directly as the generic, which is useful when you only want to expose a subset of your endpoints to the client bundle.
+
+```ts
+import type { createItem, getItem } from "./items";
+
+const client = createClient<{ createItem: typeof createItem; getItem: typeof getItem }>({
+  baseURL: "http://localhost:3000",
+});
+```
+
+## Base URL with a path prefix
+
+If your router uses a `basePath`, include that prefix in `baseURL` or append it there. The client will concatenate its own path arguments onto `baseURL`.
+
+```ts
+const client = createClient<typeof router>({
+  baseURL: "http://localhost:3000/api",
+});
+```
+
+Because the client builds on better-fetch, you can pass any option that better-fetch supports — custom headers, credentials, fetch overrides, and so on — directly in the options object.
