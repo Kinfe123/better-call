@@ -1,0 +1,58 @@
+---
+title: "Endpoint Creator"
+description: "Apply a shared set of middleware to every endpoint in a group using createEndpoint.create."
+order: 7
+---
+
+# Endpoint Creator
+
+When many endpoints in your codebase share the same middleware — a database connection, an auth check, a logger — repeating `use: [middleware]` on every endpoint gets tedious and error-prone. `createEndpoint.create` solves this by baking a set of middleware into a custom endpoint factory.
+
+## Creating a factory
+
+Call `createEndpoint.create` with an options object that includes a `use` array. The returned function has the same signature as `createEndpoint`, but every endpoint you create with it automatically inherits those middleware.
+
+```ts
+import { createEndpoint, createMiddleware } from "better-call";
+
+const dbMiddleware = createMiddleware(async (ctx) => {
+  return { db: new Database() };
+});
+
+// `create` is a drop-in replacement for `createEndpoint`
+const create = createEndpoint.create({
+  use: [dbMiddleware],
+});
+```
+
+## Using the factory
+
+```ts
+import { z } from "zod";
+
+const createItem = create(
+  "/item",
+  {
+    method: "POST",
+    body: z.object({ id: z.string() }),
+  },
+  async (ctx) => {
+    // ctx.context.db is always available — no need to declare the middleware here
+    await ctx.context.db.save({ id: ctx.body.id });
+    return { ok: true };
+  }
+);
+
+const deleteItem = create(
+  "/item/:id",
+  { method: "DELETE" },
+  async (ctx) => {
+    await ctx.context.db.delete(ctx.params.id);
+    return { ok: true };
+  }
+);
+```
+
+Both `createItem` and `deleteItem` receive `ctx.context.db` without any repeated `use` declarations. You can still add extra middleware on individual endpoints by passing a `use` array in that endpoint's options — it will be merged with the factory's base middleware.
+
+This pattern works especially well for module-level groupings: create one factory per domain (items, users, billing) and give each its own set of shared dependencies.

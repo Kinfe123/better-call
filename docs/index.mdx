@@ -1,0 +1,13 @@
+---
+title: "Introduction"
+description: "A tiny, typesafe web framework for callable endpoints that work as functions or mount to any web-standard server."
+order: 0
+---
+
+# Introduction
+
+Better Call is a tiny TypeScript framework for building endpoints that you can either invoke directly as a normal function or mount on any web-standard server — Bun, Node.js, Next.js, SvelteKit, or anything that speaks the Fetch standard. The same endpoint definition works in both contexts, so you get a single source of truth for your API logic.
+
+The library ships three main primitives: `createEndpoint` for defining handlers with typed request bodies, query params, and path parameters; `createRouter` for mounting endpoints on a server; and `createClient` (from `better-call/client`) for calling those endpoints from the browser with full end-to-end type inference. Validation is handled by any [Standard Schema](https://github.com/standard-schema/standard-schema)-compatible library — zod is the most common choice.
+
+If you're new, head to [Quickstart](/docs/quickstart) to see a working example in under five minutes, or [Installation](/docs/installation) for the full setup. Once you understand the basics, the [Concepts](/docs/concepts) section walks through every building block in depth.

@@ -1,0 +1,62 @@
+---
+title: "Installation"
+description: "Install and configure Better Call."
+order: 10
+---
+
+# Installation
+
+Better Call is published as `better-call` on npm. Install it with your package manager of choice:
+
+```bash
+pnpm add better-call
+```
+
+Better Call uses the [Standard Schema](https://github.com/standard-schema/standard-schema) interface for body and query validation. You need a compatible validation library — zod is the most commonly used option:
+
+```bash
+pnpm add zod
+```
+
+> **Note:** Better Call requires a runtime that supports the Fetch `Request` and `Response` APIs natively (Bun, Deno, Node 18+, or any modern edge runtime). For classic Node.js HTTP servers, import the bundled adapter from `better-call/node`.
+
+## Node.js adapter
+
+If you are serving your router with Node's built-in `http` module or a framework that wraps it (like Express), install nothing extra — the adapter ships with the package:
+
+```ts
+import { createRouter } from "better-call";
+import { toNodeHandler } from "better-call/node";
+import http from "http";
+
+const router = createRouter({ /* your endpoints */ });
+const server = http.createServer(toNodeHandler(router.handler));
+server.listen(3000);
+```
+
+## RPC client
+
+The typed RPC client is a separate export so you can tree-shake it from server bundles:
+
+```bash
+# No extra install required — it's included in better-call
+# Import from the /client subpath:
+import { createClient } from "better-call/client";
+```
+
+## Verifying the install
+
+Create a minimal endpoint and call it as a function to confirm everything is wired up:
+
+```ts
+import { createEndpoint } from "better-call";
+
+const ping = createEndpoint("/ping", { method: "GET" }, async () => {
+  return { ok: true };
+});
+
+const result = await ping();
+console.log(result); // { ok: true }
+```
+
+If this runs without errors, Better Call is installed correctly. Head to [Quickstart](/docs/quickstart) for a full working example.

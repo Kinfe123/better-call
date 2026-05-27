@@ -1,0 +1,74 @@
+---
+title: "Router"
+description: "Mount endpoints on a router and serve them with any Fetch-compatible server."
+order: 3
+---
+
+# Router
+
+`createRouter` collects your endpoints into a single handler you can pass to any Fetch-compatible server. Under the hood it uses [rou3](https://github.com/unjs/rou3) for route matching.
+
+## Basic usage
+
+```ts
+import { createRouter } from "better-call";
+import { createItem, getItem } from "./items";
+
+const router = createRouter({ createItem, getItem });
+
+// Bun
+Bun.serve({ fetch: router.handler });
+```
+
+## Base path
+
+If your API lives under a prefix (e.g. `/api`), set `basePath` on the router config. All endpoint paths become relative to it.
+
+```ts
+const router = createRouter(
+  { createItem },
+  { basePath: "/api" }
+);
+```
+
+> **Note:** If you set a `basePath`, pass the same prefix as `baseURL` (or include the path) when constructing the RPC client so paths resolve correctly.
+
+## Error handling
+
+Pass an `onError` function to intercept errors before Better Call's default handling. You can log the error, return a custom `Response`, or re-throw.
+
+```ts
+const router = createRouter(
+  { createItem },
+  {
+    onError: async (error) => {
+      console.error("Unhandled error:", error);
+      return new Response(
+        JSON.stringify({ message: "Something went wrong" }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    },
+  }
+);
+```
+
+If `onError` returns nothing, the router falls back to its default behavior: `APIError` instances are serialized to their status code; other errors are either re-thrown or swallowed depending on the `throwError` setting.
+
+## Router middleware
+
+Path-based middleware runs before any endpoint whose path matches the pattern. Use this for things like authentication guards or request logging across a route group.
+
+```ts
+const logRequests = createEndpoint("/api/**", { method: "GET" }, async (ctx) => {
+  console.log("incoming:", ctx.request?.url);
+});
+
+const router = createRouter(
+  { createItem },
+  {
+    routerMiddleware: [{ path: "/api/**", middleware: logRequests }],
+  }
+);
+```
+
+See [Middleware](/docs/concepts/middleware) for endpoint-level middleware, and Node Adapter if you need to serve this router with a classic Node HTTP server.
