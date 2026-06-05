@@ -1,0 +1,59 @@
+---
+title: "Headers and Cookies"
+description: "Set and read response headers and cookies from inside your endpoint handlers."
+order: 6
+---
+
+# Headers and Cookies
+
+Every endpoint handler receives a context object (`ctx`) that exposes helpers for setting response headers, writing cookies, and reading cookies from the incoming request. These helpers work whether the endpoint is called as a function or served through a router.
+
+## Setting response headers
+
+Call `ctx.setHeader` with a header name and value. The header will be included in the HTTP response when the endpoint is served through a router.
+
+```ts
+import { createEndpoint } from "better-call";
+import { z } from "zod";
+
+const createItem = createEndpoint(
+  "/item",
+  { method: "POST", body: z.object({ id: z.string() }) },
+  async (ctx) => {
+    ctx.setHeader("X-Custom-Header", "hello");
+    return { item: { id: ctx.body.id } };
+  }
+);
+```
+
+## Writing cookies
+
+Call `ctx.setCookie` to set a cookie on the response. You can pass standard cookie options as a third argument.
+
+```ts
+async (ctx) => {
+  ctx.setCookie("session", "abc123", {
+    httpOnly: true,
+    secure: true,
+    maxAge: 60 * 60 * 24,
+  });
+  return { ok: true };
+}
+```
+
+## Reading cookies
+
+Use `ctx.getCookie` to read a cookie from the incoming request by name.
+
+```ts
+async (ctx) => {
+  const session = ctx.getCookie("session");
+  return { session };
+}
+```
+
+## Signed cookies
+
+The context object also exposes helpers for signed cookies. Signed cookies are cryptographically verified on read, so you can detect tampering. Use `ctx.getSignedCookie` and `ctx.setSignedCookie` the same way as their unsigned counterparts, passing a secret string as an additional argument.
+
+> **Note:** Signed cookies rely on the Web Crypto API, which is available in Bun, modern Node.js (v19+), and all major browsers.

@@ -1,0 +1,88 @@
+---
+title: "Endpoints"
+description: "Endpoints are the building blocks of Better Call."
+order: 1
+---
+
+# Endpoints
+
+An endpoint is a self-contained unit that pairs a path and method with a validated handler. You create one with `createEndpoint`, and you can invoke it as a plain async function or mount it on a router to serve HTTP requests — the same definition handles both.
+
+## Path
+
+The path is the URL segment the endpoint responds to. It supports static paths, named parameters, and wildcards.
+
+```ts
+import { createEndpoint } from "better-call";
+
+// Static path
+const list = createEndpoint("/items", { method: "GET" }, async () => ({}));
+
+// Named parameter — available as ctx.params.id
+const getItem = createEndpoint("/item/:id", { method: "GET" }, async (ctx) => {
+  return { id: ctx.params.id };
+});
+
+// Wildcard — ctx.params.rest captures everything after /files/
+const getFile = createEndpoint("/files/**:rest", { method: "GET" }, async (ctx) => {
+  return { path: ctx.params.rest };
+});
+```
+
+## Body schema
+
+Pass a Standard Schema-compatible schema to the `body` option. Better Call validates the incoming body before your handler runs. If validation fails and the endpoint is mounted on a router, it responds with a 400 error automatically.
+
+```ts
+import { z } from "zod";
+
+const createItem = createEndpoint(
+  "/item",
+  {
+    method: "POST",
+    body: z.object({ id: z.string() }),
+  },
+  async (ctx) => {
+    return { item: { id: ctx.body.id } };
+  }
+);
+```
+
+## Query schema
+
+The `query` option works the same way for URL query parameters.
+
+```ts
+const searchItems = createEndpoint(
+  "/items",
+  {
+    method: "GET",
+    query: z.object({ q: z.string() }),
+  },
+  async (ctx) => {
+    return { query: ctx.query.q };
+  }
+);
+```
+
+## Requiring headers or a request object
+
+When you call an endpoint as a function, there is no HTTP request unless you pass one. Set `requireHeaders: true` if your handler reads `ctx.headers`, or `requireRequest: true` if it reads `ctx.request`. Better Call will throw at call time if the caller forgets to provide them.
+
+```ts
+const secured = createEndpoint(
+  "/secure",
+  { method: "GET", requireHeaders: true },
+  async (ctx) => {
+    return { token: ctx.headers.get("Authorization") };
+  }
+);
+
+await secured({ headers: new Headers({ Authorization: "Bearer xyz" }) });
+```
+
+## Handler return values
+
+The handler can return a plain object, string, number, boolean, array, or a `Response` instance. When mounted on a router, plain return values are serialized to JSON automatically.
+
+Next, see [Middleware](/docs/concepts/middleware) to learn how to share logic across endpoints.

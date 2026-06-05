@@ -1,0 +1,76 @@
+---
+title: "Router"
+description: "Mount endpoints and serve them with any web-standard server using createRouter."
+order: 3
+---
+
+# Router
+
+`createRouter` collects your endpoints into a single handler compatible with any Fetch-based server. Pass your endpoints as a named object, hand `router.handler` to your server, and Better Call takes care of path matching, validation error responses, and OpenAPI generation.
+
+```ts
+import { createRouter } from "better-call";
+import { createItem, getItem } from "./items";
+
+const router = createRouter({ createItem, getItem });
+
+// Bun
+Bun.serve({ fetch: router.handler });
+```
+
+Path matching is powered by [rou3](https://github.com/unjs/rou3).
+
+## Router options
+
+### `basePath`
+
+Set a prefix for all routes. Every endpoint path will be resolved relative to this base.
+
+```ts
+const router = createRouter({ createItem }, { basePath: "/api" });
+// createItem is now reachable at POST /api/item
+```
+
+### `routerMiddleware`
+
+Apply middleware to any request matching a path glob. See [Middleware](/docs/concepts/middleware) for details.
+
+### `onError`
+
+Provide a custom error handler. The function receives the thrown error and can return a `Response`, throw a new error, or return nothing to fall through to default handling.
+
+```ts
+const router = createRouter(
+  { createItem },
+  {
+    onError: async (error) => {
+      console.error(error);
+      return new Response(
+        JSON.stringify({ message: "Something went wrong" }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    },
+  }
+);
+```
+
+If `onError` returns a `Response`, that response is sent to the client. If it throws an `APIError`, the router converts it to the appropriate HTTP response. If it throws anything else, the error is re-thrown.
+
+### `throwError`
+
+Set `throwError: true` to have the router throw unhandled errors instead of swallowing them. The default is `false`.
+
+## Node.js adapter
+
+If you're running on Node's built-in HTTP server, use `toNodeHandler` from `better-call/node` to wrap the router handler.
+
+```ts
+import http from "http";
+import { createRouter } from "better-call";
+import { toNodeHandler } from "better-call/node";
+import { createItem } from "./items";
+
+const router = createRouter({ createItem });
+const server = http.createServer(toNodeHandler(router.handler));
+server.listen(3000);
+```

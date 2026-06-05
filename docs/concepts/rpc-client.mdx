@@ -1,0 +1,51 @@
+---
+title: "RPC Client"
+description: "Call your Better Call endpoints from the client with full type safety."
+order: 4
+---
+
+# RPC Client
+
+Better Call ships a typed RPC client in the `better-call/client` sub-path. You pass your router's type as a generic argument and get back a callable function that knows every valid path, the expected request shape, and the inferred response type — all without any code generation step.
+
+```ts
+// client.ts
+import { createClient } from "better-call/client";
+import type { router } from "./server";
+
+const client = createClient<typeof router>({
+  baseURL: "http://localhost:3000",
+});
+
+const result = await client("/item", {
+  body: { id: "123" },
+});
+// result is typed from createItem's return value
+```
+
+The client is built on [better-fetch](https://github.com/better-auth/better-fetch), so any option that better-fetch accepts can be passed alongside your request options.
+
+## Using an endpoint map instead of a router type
+
+If you don't want to export the full router, you can pass an object of endpoints as the generic type directly.
+
+```ts
+import type { createItem, getItem } from "./items";
+
+const client = createClient<{ createItem: typeof createItem; getItem: typeof getItem }>({
+  baseURL: "http://localhost:3000",
+});
+```
+
+## Base path alignment
+
+If your router uses a `basePath`, make sure the `baseURL` you pass to `createClient` includes that path, or set the same prefix in the client options.
+
+```ts
+// Router has basePath: "/api"
+const client = createClient<typeof router>({
+  baseURL: "http://localhost:3000/api",
+});
+```
+
+> **Note:** The client imports from `better-call/client`, not from the main `better-call` package. Make sure your bundler or runtime resolves sub-path exports.
