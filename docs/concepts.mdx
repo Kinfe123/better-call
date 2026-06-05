@@ -1,0 +1,19 @@
+---
+title: "Concepts"
+description: "Core ideas and mental models that explain how Better Call works."
+order: 0
+---
+
+# Concepts
+
+Better Call is built around a small set of composable primitives. Understanding them gives you everything you need to build any API, from a single utility function to a full production server with middleware, typed clients, and auto-generated OpenAPI docs.
+
+**Endpoints** are the fundamental unit. Each endpoint has a path, a method, optional validation schemas, and a handler. The same endpoint can be called as a function or served over HTTP — the definition never changes.
+
+**Middleware** lets you run shared logic before a handler executes and inject typed context into it. You attach middleware per-endpoint with the `use` option, or apply it across a path prefix using router-level middleware.
+
+**The Router** collects endpoints and exposes a `handler` function compatible with any Fetch-based server. It manages path matching, error conversion, and OpenAPI generation automatically.
+
+**The RPC Client** is a typed HTTP client  your router's type. It gives the browser — or any other consumer — the same type safety as a direct function call.
+
+Read the individual pages for each primitive: [Endpoints](/docs/concepts/endpoints), [Middleware](/docs/concepts/middleware), [Router](/docs/concepts/router), [RPC Client](/docs/concepts/rpc-client), Error Handling, [Headers and Cookies](/docs/concepts/headers-and-cookies), [Endpoint Creator](/docs/concepts/endpoint-creator), and [OpenAPI](/docs/concepts/openapi).

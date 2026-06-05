@@ -1,0 +1,80 @@
+---
+title: "Quickstart"
+description: "Run Better Call for the first time."
+order: 20
+---
+
+# Quickstart
+
+This guide walks you through creating an endpoint, mounting it to a router, and calling it from a client. By the end you'll have a running HTTP server and a fully typed RPC call from the browser side.
+
+## 1. Create an endpoint
+
+Endpoints are defined with `createEndpoint`. The `body` option accepts a Zod schema (or any Standard Schema-compatible library), and the validated data is available on `ctx.body` inside the handler.
+
+```ts
+// item.ts
+import { createEndpoint } from "better-call";
+import { z } from "zod";
+
+export const createItem = createEndpoint(
+  "/item",
+  {
+    method: "POST",
+    body: z.object({
+      id: z.string(),
+    }),
+  },
+  async (ctx) => {
+    return {
+      item: { id: ctx.body.id },
+    };
+  }
+);
+```
+
+You can call this directly as a function — no HTTP involved:
+
+```ts
+const result = await createItem({ body: { id: "123" } });
+// result.item.id === "123"
+```
+
+## 2. Mount it to a router
+
+Pass your endpoints to `createRouter` and hand the `handler` to your server. The example below uses Bun.
+
+```ts
+// server.ts
+import { createRouter } from "better-call";
+import { createItem } from "./item";
+
+const router = createRouter({ createItem });
+
+Bun.serve({
+  fetch: router.handler,
+});
+```
+
+The router uses [rou3](https://github.com/unjs/rou3) internally to match paths. The server is now live at `http://localhost:3000`.
+
+## 3. Call it from the client
+
+Import `createClient` from the `better-call/client` sub-path and pass your router's type as a generic argument. The client infers all paths, methods, body shapes, and return types automatically.
+
+```ts
+// client.ts
+import { createClient } from "better-call/client";
+import type { router } from "./server";
+
+const client = createClient<typeof router>({
+  baseURL: "http://localhost:3000",
+});
+
+const result = await client("/item", {
+  body: { id: "123" },
+});
+// result.item.id === "123"  — fully typed
+```
+
+That's the full loop: one endpoint definition, callable as a function, served over HTTP, and consumed with a typed client. From here, read about [Middleware](/docs/concepts/middleware) to share logic across endpoints, Error Handling for non-200 responses, or the [Router](/docs/concepts/router) page for advanced routing options.

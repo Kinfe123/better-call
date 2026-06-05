@@ -1,0 +1,49 @@
+---
+title: "Endpoint Creator"
+description: "Apply a shared set of middleware to every endpoint you create using createEndpoint.create."
+order: 7
+---
+
+# Endpoint Creator
+
+When you have a set of middleware that should apply to many endpoints — a database connection, an authentication check, a logger — duplicating the `use` array on every call gets tedious. `createEndpoint.create` solves this by letting you stamp out a pre-configured version of `createEndpoint` with those middleware baked in.
+
+## Creating a custom creator
+
+Call `createEndpoint.create` with an options object. Pass the shared middleware in `use`, then use the returned function exactly like `createEndpoint`.
+
+```ts
+import { createEndpoint, createMiddleware } from "better-call";
+
+class Database {
+  async save(data: unknown) { /* ... */ }
+}
+
+const dbMiddleware = createMiddleware(async () => {
+  return { db: new Database() };
+});
+
+// All endpoints built with `create` automatically include dbMiddleware
+const create = createEndpoint.create({
+  use: [dbMiddleware],
+});
+
+const createItem = create(
+  "/item",
+  {
+    method: "POST",
+    body: z.object({ id: z.string() }),
+  },
+  async (ctx) => {
+    // ctx.context.db is fully typed here
+    await ctx.context.db.save(ctx.body);
+    return { ok: true };
+  }
+);
+```
+
+Endpoints built with `create` are identical to those built with `createEndpoint` — you can pass them to `createRouter`, call them as functions, and use them with the RPC client without any changes.
+
+## When to use this
+
+Use an endpoint creator whenever you have two or more endpoints that share the same middleware. It keeps your endpoint definitions concise and ensures the shared logic is never accidentally omitted. For per-request or path-scoped middleware, use [router-level middleware](/docs/concepts/router) instead.

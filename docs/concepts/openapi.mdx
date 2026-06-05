@@ -1,0 +1,49 @@
+---
+title: "OpenAPI"
+description: "Better Call automatically generates an OpenAPI schema and serves an interactive reference at /api/reference."
+order: 8
+---
+
+# OpenAPI
+
+## Default behavior
+
+Once your router is running, navigate to `http://localhost:3000/api/reference` to see the interactive docs. No extra setup is required.
+
+## Configuring the OpenAPI output
+
+Pass an `openapi` key to the second argument of `createRouter` to customize the spec and the Scalar UI.
+
+```ts
+import { createRouter } from "better-call";
+import { createItem } from "./items";
+
+const router = createRouter(
+  { createItem },
+  {
+    openapi: {
+      disabled: false,        // set true to turn off the reference page
+      path: "/api/reference", // default: /api/reference
+      scalar: {
+        title: "My API",
+        version: "1.0.0",
+        description: "My API description",
+        theme: "dark",        // default: saturn
+      },
+    },
+  }
+);
+```
+
+## Disabling the reference page
+
+Set `openapi.disabled: true` to prevent Better Call from registering the `/api/reference` route entirely. You might do this in production environments where you don't want the docs publicly accessible.
+
+```ts
+const router = createRouter(
+  { createItem },
+  { openapi: { disabled: true } }
+);
+```
+
+> **Note:** Schema generation from Zod is automatic. If you use a different Standard Schema-compatible library, you may need to provide custom `OpenAPIParameter` annotations on your endpoint options to populate the spec fully.

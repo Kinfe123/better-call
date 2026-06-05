@@ -1,0 +1,62 @@
+---
+title: "Middleware"
+description: "Share logic across endpoints and inject typed context with createMiddleware."
+order: 2
+---
+
+# Middleware
+
+Middleware lets you run code before an endpoint handler and optionally extend the handler's context with new typed properties. You attach middleware to individual endpoints using the `use` option, or apply it across a URL prefix at the router level.
+
+## Creating middleware
+
+Call `createMiddleware` with an async function. Anything you return from the middleware is merged into `ctx.context` inside the endpoint handler, fully typed.
+
+```ts
+import { createMiddleware, createEndpoint } from "better-call";
+
+const authMiddleware = createMiddleware(async (ctx) => {
+  const token = ctx.headers?.get("Authorization");
+  return { user: { token } };
+});
+
+const getProfile = createEndpoint(
+  "/profile",
+  { method: "GET", use: [authMiddleware] },
+  async (ctx) => {
+    // ctx.context.user is typed from the middleware return
+    return { token: ctx.context.user.token };
+  }
+);
+```
+
+You can chain multiple middleware by passing more than one entry in the `use` array. Their return values are merged together into `ctx.context`.
+
+## Router-level middleware
+
+To apply middleware to every request matching a path prefix, pass `routerMiddleware` to `createRouter`. Each entry takes a `path` glob and a middleware endpoint.
+
+```ts
+import { createRouter, createEndpoint } from "better-call";
+
+const logRequests = createEndpoint(
+  "/api/**",
+  { method: "GET" },
+  async (ctx) => {
+    console.log(ctx.request?.url);
+  }
+);
+
+const router = createRouter(
+  { getProfile },
+  {
+    routerMiddleware: [
+      { path: "/api/**", middleware: logRequests },
+    ],
+  }
+);
+```
+
+> **Note:** Router-level middleware runs for every request whose path matches the glob, regardless of which endpoint ultimately handles it.
+
+To learn how to share a common set of middleware across many endpoints automatically, see [Endpoint Creator](/docs/concepts/endpoint-creator).

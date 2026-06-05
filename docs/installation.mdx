@@ -1,0 +1,52 @@
+---
+title: "Installation"
+description: "Install and configure Better Call."
+order: 10
+---
+
+# Installation
+
+Better Call is published on npm as `better-call`. Install it with your package manager of choice.
+
+```bash
+pnpm add better-call
+```
+
+```bash
+npm install better-call
+```
+
+```bash
+yarn add better-call
+```
+
+## Validation library
+
+Better Call validates request bodies and query strings through the [Standard Schema](https://github.com/standard-schema/standard-schema) specification. You need a compatible validation library — Zod is the most common choice.
+
+```bash
+pnpm add zod
+```
+
+Any Standard Schema-compatible library works as a drop-in replacement.
+
+## TypeScript
+
+Better Call is written in TypeScript and ships its own types. No `@types/` package is needed. Your `tsconfig.json` should target ES2020 or later and enable `strict` mode for the best inference experience.
+
+## Verifying the install
+
+Create a small file and run it to confirm everything resolves:
+
+```ts
+import { createEndpoint } from "better-call";
+
+const ping = createEndpoint("/ping", { method: "GET" }, async () => {
+  return { ok: true };
+});
+
+const result = await ping();
+console.log(result); // { ok: true }
+```
+
+If this runs without errors, you're ready to go. Head to the [Quickstart](/docs/quickstart) to build a full working server.
